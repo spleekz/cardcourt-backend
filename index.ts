@@ -5,7 +5,7 @@ import cors from 'cors'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { User } from './models/user'
-import { Request, Response, ServerCodes } from './@types/cc-server'
+import { Request, Response, Codes } from './@types/cc-server'
 
 const app: express.Application = express()
 
@@ -33,19 +33,26 @@ interface RegistrationResponse {
   }
 }
 
-app.post('/register', (req: Request<RegistrationRequest>, res: Response<RegistrationResponse>) => {
+app.post(
+  '/register',
+  async (req: Request<RegistrationRequest>, res: Response<RegistrationResponse>) => {
   const { name, password } = req.body
 
-  User.findOne({ name }).then((candidates) => {
+    const candidates = await User.findOne({ name })
+
     if (candidates) {
-      return res.json({ code: ServerCodes.Error, message: 'Уже есть пользователь с таким именем!' })
+      return res.json({ code: Codes.Error, message: 'Уже есть пользователь с таким именем!' })
     }
-    bcrypt.hash(password, 4).then((hashedPassword) => {
+
+    const hashedPassword = await bcrypt.hash(password, 4)
+
       const user = new User({ name, password: hashedPassword })
-      user.save().then(() => {
+    await user.save()
+
         const token = jwt.sign({ name: user.name }, config.secret, { expiresIn: '1h' })
+
         return res.json({
-          code: ServerCodes.Success,
+      code: Codes.Success,
           data: {
             token,
             user: {
@@ -53,10 +60,8 @@ app.post('/register', (req: Request<RegistrationRequest>, res: Response<Registra
             },
           },
         })
-      })
-    })
-  })
-})
+  }
+)
 
 interface LoginResponse {
   token: string
@@ -70,30 +75,33 @@ interface LoginRequest {
   password: string
 }
 
-app.post('/login', (req: Request<LoginRequest>, res: Response<LoginResponse>) => {
+app.post('/login', async (req: Request<LoginRequest>, res: Response<LoginResponse>) => {
   const { name, password } = req.body
 
-  User.findOne({ name }).then((user) => {
+  const user = await User.findOne({ name })
+
     if (!user) {
-      return res.json({ code: ServerCodes.Error, message: 'Нет пользователя с таким именем!' })
+    return res.json({ code: Codes.Error, message: 'Нет пользователя с таким именем!' })
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password)
 
     if (!isPasswordValid) {
-      return res.json({ code: ServerCodes.Error, message: 'Неверный пароль!' })
+    return res.json({ code: Codes.Error, message: 'Неверный пароль!' })
     }
 
     const token = jwt.sign({ name: user.name }, config.secret, { expiresIn: '1h' })
 
     return res.json({
-      code: ServerCodes.Success,
+    code: Codes.Success,
       data: {
         token,
         user: {
           name: user.name,
         },
       },
+  })
+})
     })
   })
 })

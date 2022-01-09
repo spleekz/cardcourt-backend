@@ -10,13 +10,11 @@ import { Request, Response, Codes } from './@types/cc-server'
 const app: express.Application = express()
 
 const port = config.port
-const dbUri = encodeURI(config.uri)
-console.log(dbUri)
 
 app.use(cors())
 app.use(express.json())
 
-mongoose.connect(dbUri).then((db) => {})
+mongoose.connect(config.uri).then((db) => {})
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`)

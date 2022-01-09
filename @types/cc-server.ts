@@ -1,20 +1,20 @@
 import express from 'express'
 
-export enum ServerCodes {
+export enum Codes {
   Success = 0,
   Error = 1,
   Message = 2,
 }
-  
+
 interface DefaultResponse {
-  code: ServerCodes
+  code: Codes
 }
 interface ResponseWithData<T> extends DefaultResponse {
-  code: ServerCodes.Success
+  code: Codes.Success
   data: T
 }
 interface ResponseWithMessage extends DefaultResponse {
-  code: ServerCodes.Error | ServerCodes.Message
+  code: Codes.Error | Codes.Message
   message: string
 }
 

@@ -1,8 +1,13 @@
-import { createSchema, Type, typedModel } from 'ts-mongoose'
+import { Schema, model } from 'mongoose'
 
-const UserSchema = createSchema({
-  name: Type.string({ required: true }),
-  password: Type.string({ required: true }),
+export interface IUser {
+  name: string
+  password: string
+}
+
+const UserSchema = new Schema({
+  name: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
 })
 
-export const User = typedModel('User',UserSchema)
+export const User = model<IUser>('User', UserSchema)

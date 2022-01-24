@@ -1,0 +1,556 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "cardcourt API",
+    "description": "Карточки!",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4400"
+    }
+  ],
+  "tags": [
+    {
+      "name": "cards",
+      "description": "Все про Ваши (и не только) карточки"
+    },
+    {
+      "name": "users",
+      "description": "Все о пользователях"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "security ": [],
+        "tags": ["users"],
+        "summary": "Регистрация пользователя на сервере",
+        "requestBody": {
+          "description": "Данные нового пользователя",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/registerUser"
+              },
+              "example": {
+                "name": "Cool_Bob",
+                "password": "secret_password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Возвращает токен пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/token"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "security ": [],
+        "tags": ["users"],
+        "summary": "Войти в свой аккаунт",
+        "requestBody": {
+          "description": "Ваши логин и пароль",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginUser"
+              },
+              "example": {
+                "name": "Cool_Bob",
+                "password": "secret_password"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Возвращает токен пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/token"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "security ": [
+          {
+            "auth": []
+          }
+        ],
+        "tags": ["users"],
+        "summary": "Получить данные о себе с помощью токена",
+        "responses": {
+          "200": {
+            "description": "Ваши данные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/me"
+                },
+                "example": {
+                  "name": "Cool_Bob"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    },
+    "/cards": {
+      "get": {
+        "tags": ["cards"],
+        "summary": "Получить список всех публичных карточек",
+        "responses": {
+          "200": {
+            "description": "Список карточек",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/cards"
+                },
+                "example": [
+                  {
+                    "_id": "0238hghuuu8f9d",
+                    "name": "My Frist Card",
+                    "author": "Cool_Bob",
+                    "words": [
+                      {
+                        "en": "sun",
+                        "ru": "солнце",
+                        "_id": "hh5432"
+                      },
+                      {
+                        "en": "moon",
+                        "ru": "луна",
+                        "_id": "hh5433"
+                      },
+                      {
+                        "en": "earth",
+                        "ru": "земля",
+                        "_id": "hh5434"
+                      }
+                    ],
+                    "ui": {
+                      "bodyColor": "#fff",
+                      "headColor": "#ff0000"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/card": {
+      "post": {
+        "tags": ["cards"],
+        "summary": "Создать карточку от своего имени",
+        "requestBody": {
+          "description": "Свойства создаваемой карточки",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sendedCard"
+              },
+              "example": {
+                "name": "My Frist Card",
+                "words": [
+                  {
+                    "en": "sun",
+                    "ru": "солнце"
+                  },
+                  {
+                    "en": "moon",
+                    "ru": "луна"
+                  },
+                  {
+                    "en": "earth",
+                    "ru": "земля"
+                  }
+                ],
+                "ui": {
+                  "bodyColor": "#fff",
+                  "headColor": "#ff0000"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Сообщение о статусе добавления карточки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                },
+                "example": {
+                  "message": "Карточка создана!"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["cards"],
+        "summary": "Удалить карточку по id",
+        "requestBody": {
+          "description": "id удаляемой карточки",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deletedCard"
+              },
+              "example": {
+                "_id": "0238hghuuu8f9d"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Сообщение об удалении карточки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                },
+                "example": {
+                  "message": "Карточка удалена!"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["cards"],
+        "summary": "Обновить уже существующую карточку",
+        "requestBody": {
+          "description": "Обновляемая карточка",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updatedCard"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Сообщение о добавлении карточки",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "auth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "messageResponse": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "id": {
+        "type": "object",
+        "required": ["_id"],
+        "properties": {
+          "_id": {
+            "type": "string"
+          }
+        }
+      },
+      "token": {
+        "type": "object",
+        "required": ["token"],
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "registerUser": {
+        "type": "object",
+        "required": ["name", "password"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "loginUser": {
+        "type": "object",
+        "required": ["name", "password"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "fullUser": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/loginUser"
+          },
+          {
+            "$ref": "#/components/schemas/id"
+          }
+        ]
+      },
+      "me": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "cardUI": {
+        "type": "object",
+        "required": ["headColor", "bodyColor"],
+        "properties": {
+          "headColor": {
+            "type": "string"
+          },
+          "bodyColor": {
+            "type": "string"
+          }
+        }
+      },
+      "editedCardFields": {
+        "type": "object",
+        "required": ["ui", "words", "name"],
+        "properties": {
+          "ui": {
+            "$ref": "#/components/schemas/cardUI"
+          },
+          "words": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/cardWord"
+                },
+                {
+                  "$ref": "#/components/schemas/sendedCardWord"
+                }
+              ]
+            }
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "sendedCardWord": {
+        "type": "object",
+        "required": ["en", "ru"],
+        "properties": {
+          "en": {
+            "type": "string"
+          },
+          "ru": {
+            "type": "string"
+          }
+        }
+      },
+      "cardWord": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/sendedCardWord"
+          },
+          {
+            "$ref": "#/components/schemas/id"
+          }
+        ]
+      },
+      "sendedCardWords": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/sendedCardWord"
+        }
+      },
+      "cardWords": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/cardWord"
+        }
+      },
+      "sendedCard": {
+        "type": "object",
+        "required": ["name", "words", "ui"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "words": {
+            "$ref": "#/components/schemas/sendedCardWords"
+          },
+          "ui": {
+            "$ref": "#/components/schemas/cardUI"
+          }
+        }
+      },
+      "card": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": ["author", "words"],
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "words": {
+                "$ref": "#/components/schemas/cardWords"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/sendedCard"
+          },
+          {
+            "$ref": "#/components/schemas/id"
+          }
+        ]
+      },
+      "deletedCard": {
+        "$ref": "#/components/schemas/id"
+      },
+      "updatedCard": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/id"
+          },
+          {
+            "$ref": "#/components/schemas/editedCardFields"
+          }
+        ]
+      },
+      "cards": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/card"
+        }
+      }
+    },
+    "securitySchemes": {
+      "auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

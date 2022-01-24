@@ -4,8 +4,9 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { User } from './models/user'
-import { Request, Response, Codes } from './@types/cc-server'
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from './swagger.json'
+import path from 'path'
 
 const app: express.Application = express()
 
@@ -102,4 +103,7 @@ app.post('/login', async (req: Request<LoginRequest>, res: Response<LoginRespons
 })
     })
   })
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.get('/swagger.json', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '', 'swagger.json'))
 })

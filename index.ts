@@ -7,12 +7,15 @@ import jwt from 'jsonwebtoken'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from './swagger.json'
 import path from 'path'
+import { authMiddleware } from './middlewares/auth-middleware'
 import { UserModel } from './models/user'
+import { CardModel } from './models/card'
 import { Request, Response } from './api/server-utility-types'
 import {
   LoginUser,
   RegisterUser,
   Token,
+  SendedCard,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -71,6 +74,22 @@ app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => 
   })
 })
 
+app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Response) => {
+  const { name } = req.body
+  const author = req.user.name
+
+  const sameCard = await CardModel.findOne({ name, author })
+
+  if (sameCard) {
+    return res.json({
+      message: 'Вы уже создали карточку с таким названием!',
+    })
+  }
+
+  const card = new CardModel({ ...req.body, author })
+  await card.save()
+
+  return res.json({ message: 'Карточка создана!' })
         })
   }
 )

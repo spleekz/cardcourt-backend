@@ -18,6 +18,7 @@ import {
   Token,
   SendedCard,
   DeletedCard,
+  Me,
   UpdatedCard,
   Card,
   CardsResponse,
@@ -42,14 +43,14 @@ app.post('/register', async (req: Request<{}, RegisterUser>, res: Response<Token
 
   const candidates = await UserModel.findOne({ name })
 
-    if (candidates) {
+  if (candidates) {
     return res.json({ message: 'Уже есть пользователь с таким именем!' })
-    }
+  }
 
-    const hashedPassword = await bcrypt.hash(password, 4)
+  const hashedPassword = await bcrypt.hash(password, 4)
 
   const user = new UserModel({ name, password: hashedPassword })
-    await user.save()
+  await user.save()
 
   const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
 
@@ -75,8 +76,8 @@ app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => 
 
   const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
 
-        return res.json({
-            token,
+  return res.json({
+    token,
   })
 })
 
@@ -96,7 +97,7 @@ app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Resp
   await card.save()
 
   return res.json({ message: 'Карточка создана!' })
-        })
+})
 
 app.delete(
   '/card',
@@ -129,12 +130,12 @@ app.put(
 
     if (!isAuthor) {
       return res.status(400).json({ message: 'Вы не можете обновить эту карточку!' })
-  }
+    }
 
     await CardModel.updateOne({ _id: updatedCard._id }, { $set: updatedCard })
 
     return res.json({ message: 'Карточка успешно обновлена!' })
-}
+  }
 )
 
 app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<Card>) => {
@@ -154,7 +155,7 @@ interface GetCardsQuery {
   pagesToLoad?: string
   search?: string
   pageSize?: string
-    }
+}
 
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
   const { page = 1, pagesToLoad = 1, pageSize = 5, search = '' } = req.query
@@ -177,7 +178,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
 
   if (+page + +pagesToLoad - 1 > pageCount) {
     return res.status(404).json({ message: `Максимальное кол-во страниц - ${pageCount}` })
-    }
+  }
 
   let cards: Cards = []
 
@@ -189,7 +190,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
         },
         {
           'words.en': { $regex: search },
-      },
+        },
         {
           'words.ru': { $regex: search },
         },
@@ -206,8 +207,21 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     pageCount,
   })
 })
-    })
+
+app.get('/me', authMiddleware, async (req, res: Response<Me>) => {
+  const { user } = req
+
+  const userData = await UserModel.findOne({ name: user.name })
+
+  if (!userData) {
+    return res.json({ message: 'Неизвестная ошибка' })
+  }
+
+  return res.json({
+    name: userData.name,
   })
+})
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.get('/swagger.json', (req, res) => {
   res.sendFile(path.resolve(__dirname, '', 'swagger.json'))

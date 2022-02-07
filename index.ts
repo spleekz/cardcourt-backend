@@ -7,6 +7,13 @@ import jwt from 'jsonwebtoken'
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from './swagger.json'
 import path from 'path'
+import { UserModel } from './models/user'
+import { Request, Response } from './api/server-utility-types'
+import {
+  LoginUser,
+  RegisterUser,
+  Token,
+} from './api/api-types'
 
 const app: express.Application = express()
 
@@ -21,43 +28,49 @@ app.listen(port, () => {
   console.log(`server started on port ${port}`)
 })
 
-interface RegistrationRequest {
-  name: string
-  password: string
-}
-interface RegistrationResponse {
-  token: string
-  user: {
-    name: string  
-  }
-}
-
-app.post(
-  '/register',
-  async (req: Request<RegistrationRequest>, res: Response<RegistrationResponse>) => {
+app.post('/register', async (req: Request<{}, RegisterUser>, res: Response<Token>) => {
   const { name, password } = req.body
 
-    const candidates = await User.findOne({ name })
+  const candidates = await UserModel.findOne({ name })
 
     if (candidates) {
-      return res.json({ code: Codes.Error, message: 'Уже есть пользователь с таким именем!' })
+    return res.json({ message: 'Уже есть пользователь с таким именем!' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 4)
 
-      const user = new User({ name, password: hashedPassword })
+  const user = new UserModel({ name, password: hashedPassword })
     await user.save()
 
-        const token = jwt.sign({ name: user.name }, config.secret, { expiresIn: '1h' })
+  const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
+
+  return res.json({
+    token,
+  })
+})
+
+app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => {
+  const { name, password } = req.body
+
+  const user = await UserModel.findOne({ name })
+
+  if (!user) {
+    return res.json({ message: 'Нет пользователя с таким именем!' })
+  }
+
+  const isPasswordValid = bcrypt.compareSync(password, user.password)
+
+  if (!isPasswordValid) {
+    return res.json({ message: 'Неверный пароль!' })
+  }
+
+  const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
 
         return res.json({
-      code: Codes.Success,
-          data: {
             token,
-            user: {
-              name: user.name,
-            },
-          },
+  })
+})
+
         })
   }
 )

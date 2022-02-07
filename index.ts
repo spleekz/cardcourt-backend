@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from './swagger.json'
 import path from 'path'
 import { authMiddleware } from './middlewares/auth-middleware'
+import { cardMiddleware } from './middlewares/card-middleware'
 import { UserModel } from './models/user'
 import { CardModel } from './models/card'
 import { Request, Response } from './api/server-utility-types'
@@ -16,6 +17,7 @@ import {
   RegisterUser,
   Token,
   SendedCard,
+  DeletedCard,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -91,6 +93,20 @@ app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Resp
 
   return res.json({ message: 'Карточка создана!' })
         })
+
+app.delete(
+  '/card',
+  authMiddleware,
+  cardMiddleware,
+  async (req: Request<{}, DeletedCard>, res: Response) => {
+    const { user, card } = req
+
+    if (!(user.name === card.author)) {
+      return res.json({ message: 'Вы не можете удалить эту карточку!' })
+    }
+
+    await card.delete()
+    return res.json({ message: `Карточка '${card.name}' удалена!` })
   }
 )
 

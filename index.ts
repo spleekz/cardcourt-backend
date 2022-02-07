@@ -20,6 +20,8 @@ import {
   DeletedCard,
   UpdatedCard,
   Card,
+  CardsResponse,
+  Cards,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -146,24 +148,62 @@ app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<
 
   return res.json(card)
 })
+
+interface GetCardsQuery {
+  page?: string
+  pagesToLoad?: string
+  search?: string
+  pageSize?: string
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, user.password)
+app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
+  const { page = 1, pagesToLoad = 1, pageSize = 5, search = '' } = req.query
 
-    if (!isPasswordValid) {
-    return res.json({ code: Codes.Error, message: 'Неверный пароль!' })
-    }
-
-    const token = jwt.sign({ name: user.name }, config.secret, { expiresIn: '1h' })
-
-    return res.json({
-    code: Codes.Success,
-      data: {
-        token,
-        user: {
-          name: user.name,
-        },
+  const allCards = await CardModel.find({
+    $or: [
+      {
+        name: { $regex: search },
       },
+      {
+        'words.en': { $regex: search },
+      },
+      {
+        'words.ru': { $regex: search },
+      },
+    ],
+  })
+
+  const pageCount = Math.ceil(allCards.length / +pageSize)
+
+  if (+page + +pagesToLoad - 1 > pageCount) {
+    return res.status(404).json({ message: `Максимальное кол-во страниц - ${pageCount}` })
+    }
+
+  let cards: Cards = []
+
+  for (let i = 0; i < pagesToLoad; i++) {
+    const cardsFromPage = await CardModel.find({
+      $or: [
+        {
+          name: { $regex: search },
+        },
+        {
+          'words.en': { $regex: search },
+      },
+        {
+          'words.ru': { $regex: search },
+        },
+      ],
+    })
+      .skip((+page + i - 1) * +pageSize)
+      .limit(+pageSize)
+
+    cards = [...cards, ...cardsFromPage]
+  }
+
+  return res.json({
+    cards,
+    pageCount,
   })
 })
     })

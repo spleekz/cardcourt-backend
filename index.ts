@@ -18,6 +18,7 @@ import {
   Token,
   SendedCard,
   DeletedCard,
+  UpdatedCard,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -110,12 +111,28 @@ app.delete(
   }
 )
 
-interface LoginResponse {
-  token: string
-  user: {
-    name: string
+app.put(
+  '/card',
+  authMiddleware,
+  cardMiddleware,
+  async (req: Request<{}, UpdatedCard>, res: Response) => {
+    const { user } = req
+    const updatedCard = req.body
+
+    const cardAuthor = user.name
+    const thisCard = await CardModel.findById(updatedCard._id)
+
+    const isAuthor = cardAuthor === thisCard?.author
+
+    if (!isAuthor) {
+      return res.status(400).json({ message: 'Вы не можете обновить эту карточку!' })
   }
+
+    await CardModel.updateOne({ _id: updatedCard._id }, { $set: updatedCard })
+
+    return res.json({ message: 'Карточка успешно обновлена!' })
 }
+)
 
 interface LoginRequest {
   name: string

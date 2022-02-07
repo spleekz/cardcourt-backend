@@ -28,7 +28,7 @@
         "summary": "Регистрация пользователя на сервере",
         "requestBody": {
           "description": "Данные нового пользователя",
-          "required": "true",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -72,7 +72,7 @@
         "summary": "Войти в свой аккаунт",
         "requestBody": {
           "description": "Ваши логин и пароль",
-          "required": "true",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -143,43 +143,84 @@
     "/cards": {
       "get": {
         "tags": ["cards"],
-        "summary": "Получить список всех публичных карточек",
+        "summary": "Начиная со страницы page включительно, загрузить pagesToLoad страниц, имеющих размер pageSize и удовлетворяющих поисковому запросу search",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Номер страницы, размером pageSize (по умолчанию - 1)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pagesToLoad",
+            "in": "query",
+            "description": "Количество страниц, которое нужно загрузить, начиная с page включительно",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Размер одной страницы (по умолчанию - 5)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Поисковый запрос",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Список карточек",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/cards"
+                  "$ref": "#/components/schemas/cardsResponse"
                 },
-                "example": [
-                  {
-                    "_id": "0238hghuuu8f9d",
-                    "name": "My Frist Card",
-                    "author": "Cool_Bob",
-                    "words": [
-                      {
-                        "en": "sun",
-                        "ru": "солнце",
-                        "_id": "hh5432"
-                      },
-                      {
-                        "en": "moon",
-                        "ru": "луна",
-                        "_id": "hh5433"
-                      },
-                      {
-                        "en": "earth",
-                        "ru": "земля",
-                        "_id": "hh5434"
+                "example": {
+                  "cards": [
+                    {
+                      "_id": "0238hghuuu8f9d",
+                      "name": "My Frist Card",
+                      "author": "Cool_Bob",
+                      "words": [
+                        {
+                          "en": "sun",
+                          "ru": "солнце",
+                          "_id": "hh5432"
+                        },
+                        {
+                          "en": "moon",
+                          "ru": "луна",
+                          "_id": "hh5433"
+                        },
+                        {
+                          "en": "earth",
+                          "ru": "земля",
+                          "_id": "hh5434"
+                        }
+                      ],
+                      "ui": {
+                        "bodyColor": "#fff",
+                        "headColor": "#ff0000"
                       }
-                    ],
-                    "ui": {
-                      "bodyColor": "#fff",
-                      "headColor": "#ff0000"
                     }
-                  }
-                ]
+                  ],
+                  "pageCount": 5
+                }
               }
             }
           },
@@ -202,7 +243,7 @@
         "summary": "Создать карточку от своего имени",
         "requestBody": {
           "description": "Свойства создаваемой карточки",
-          "required": "true",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -268,7 +309,7 @@
         "summary": "Удалить карточку по id",
         "requestBody": {
           "description": "id удаляемой карточки",
-          "required": "true",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -316,7 +357,7 @@
         "summary": "Обновить уже существующую карточку",
         "requestBody": {
           "description": "Обновляемая карточка",
-          "required": "true",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -342,6 +383,71 @@
             "auth": []
           }
         ]
+      }
+    },
+    "/card/{cardId}": {
+      "get": {
+        "tags": ["cards"],
+        "summary": "Получить информацию о карточке по id",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "description": "Id карточки",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о карточке",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/card"
+                },
+                "example": {
+                  "_id": "0238hghuuu8f9d",
+                  "name": "My Frist Card",
+                  "author": "Cool_Bob",
+                  "words": [
+                    {
+                      "en": "sun",
+                      "ru": "солнце",
+                      "_id": "hh5432"
+                    },
+                    {
+                      "en": "moon",
+                      "ru": "луна",
+                      "_id": "hh5433"
+                    },
+                    {
+                      "en": "earth",
+                      "ru": "земля",
+                      "_id": "hh5434"
+                    }
+                  ],
+                  "ui": {
+                    "bodyColor": "#fff",
+                    "headColor": "#ff0000"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -542,6 +648,18 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/card"
+        }
+      },
+      "cardsResponse": {
+        "type": "object",
+        "required": ["pageCount", "cards"],
+        "properties": {
+          "cards": {
+            "$ref": "#/components/schemas/cards"
+          },
+          "pageCount": {
+            "type": "integer"
+          }
         }
       }
     },

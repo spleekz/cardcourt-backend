@@ -1,13 +1,14 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Document } from 'mongoose'
+import { FullUser, LoginUser } from '../api/api-types'
 
-export interface IUser {
-  name: string
-  password: string
-}
+const userSchema = new Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+  },
+  { versionKey: false }
+)
 
-const UserSchema = new Schema({
-  name: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-})
+export type FullUserDocument = Document<any, any, FullUser> & FullUser
 
-export const User = model<IUser>('User', UserSchema)
+export const UserModel = model<LoginUser>('User', userSchema)

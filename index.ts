@@ -19,6 +19,7 @@ import {
   SendedCard,
   DeletedCard,
   UpdatedCard,
+  Card,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -134,18 +135,17 @@ app.put(
 }
 )
 
-interface LoginRequest {
-  name: string
-  password: string
-}
+app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<Card>) => {
+  const { cardId } = req.params
 
-app.post('/login', async (req: Request<LoginRequest>, res: Response<LoginResponse>) => {
-  const { name, password } = req.body
+  const card = await CardModel.findById(cardId)
 
-  const user = await User.findOne({ name })
+  if (!card) {
+    return res.status(404).json({ message: 'Нет такой карточки!' })
+  }
 
-    if (!user) {
-    return res.json({ code: Codes.Error, message: 'Нет пользователя с таким именем!' })
+  return res.json(card)
+})
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password)

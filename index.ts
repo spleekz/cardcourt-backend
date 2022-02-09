@@ -180,27 +180,21 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     return res.status(404).json({ message: `Максимальное кол-во страниц - ${pageCount}` })
   }
 
-  let cards: Cards = []
-
-  for (let i = 0; i < pagesToLoad; i++) {
-    const cardsFromPage = await CardModel.find({
-      $or: [
-        {
-          name: { $regex: search },
-        },
-        {
-          'words.en': { $regex: search },
-        },
-        {
-          'words.ru': { $regex: search },
-        },
-      ],
-    })
-      .skip((+page + i - 1) * +pageSize)
-      .limit(+pageSize)
-
-    cards = [...cards, ...cardsFromPage]
-  }
+  const cards = await CardModel.find({
+    $or: [
+      {
+        name: { $regex: search },
+      },
+      {
+        'words.en': { $regex: search },
+      },
+      {
+        'words.ru': { $regex: search },
+      },
+    ],
+  })
+    .skip((+page - 1) * +pageSize)
+    .limit(+pageSize * +pagesToLoad)
 
   return res.json({
     cards,

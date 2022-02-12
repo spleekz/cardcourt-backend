@@ -160,16 +160,18 @@ interface GetCardsQuery {
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
   const { page = 1, pagesToLoad = 1, pageSize = 5, search = '' } = req.query
 
+  const searchRegex = new RegExp(search, 'i')
+
   const allCards = await CardModel.find({
     $or: [
       {
-        name: { $regex: search },
+        name: searchRegex,
       },
       {
-        'words.en': { $regex: search },
+        'words.en': searchRegex,
       },
       {
-        'words.ru': { $regex: search },
+        'words.ru': searchRegex,
       },
     ],
   })
@@ -183,13 +185,13 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   const cards = await CardModel.find({
     $or: [
       {
-        name: { $regex: search },
+        name: searchRegex,
       },
       {
-        'words.en': { $regex: search },
+        'words.en': searchRegex,
       },
       {
-        'words.ru': { $regex: search },
+        'words.ru': searchRegex,
       },
     ],
   })

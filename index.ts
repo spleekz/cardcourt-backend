@@ -158,7 +158,9 @@ interface GetCardsQuery {
 }
 
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
-  const { page = 1, pagesToLoad = 1, pageSize = 5, search = '' } = req.query
+  const { page = 1, pageSize = 5, search = '' } = req.query
+
+  let pagesToLoad = req.query.pagesToLoad || 1
 
   const searchRegex = new RegExp(search, 'i')
 
@@ -178,8 +180,12 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
 
   const pageCount = Math.ceil(allCards.length / +pageSize)
 
-  if (+page + +pagesToLoad - 1 > pageCount) {
+  if (+page > pageCount) {
     return res.status(404).json({ message: `Максимальное кол-во страниц - ${pageCount}` })
+  }
+
+  if (+page + +pagesToLoad > pageCount) {
+    pagesToLoad = pageCount - +page
   }
 
   const cards = await CardModel.find({

@@ -22,7 +22,6 @@ import {
   UpdatedCard,
   Card,
   CardsResponse,
-  Cards,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -185,7 +184,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   }
 
   if (+page + +pagesToLoad > pageCount) {
-    pagesToLoad = pageCount - +page
+    pagesToLoad = pageCount - +page + 1
   }
 
   const cards = await CardModel.find({
@@ -207,6 +206,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   return res.json({
     cards,
     pageCount,
+    pagesLoaded: +pagesToLoad,
   })
 })
 

@@ -652,10 +652,13 @@
       },
       "cardsResponse": {
         "type": "object",
-        "required": ["pageCount", "cards"],
+        "required": ["pageCount", "cards", "pagesLoaded"],
         "properties": {
           "cards": {
             "$ref": "#/components/schemas/cards"
+          },
+          "pagesLoaded": {
+            "type": "integer"
           },
           "pageCount": {
             "type": "integer"

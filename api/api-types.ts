@@ -31,7 +31,12 @@ export interface LoginUser {
   password: string;
 }
 
-export type FullUser = LoginUser & Id;
+export type FullUser = RegisterUser & PublicUser;
+
+export interface PublicUser {
+  name: string;
+  cards: Cards;
+}
 
 export interface Me {
   name: string;
@@ -82,8 +87,4 @@ export interface CardsResponse {
   cards: Cards;
   pagesLoaded: number;
   pageCount: number;
-}
-
-export interface User {
-  name: string;
 }

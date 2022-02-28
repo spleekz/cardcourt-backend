@@ -1,6 +1,5 @@
 import { Schema, model, Document } from 'mongoose'
 import { FullUser, LoginUser } from '../api/api-types'
-import { cardSchema } from './card'
 
 const userSchema = new Schema(
   {
@@ -13,4 +12,4 @@ const userSchema = new Schema(
 
 export type FullUserDocument = Document<any, any, FullUser> & FullUser
 
-export const UserModel = model<LoginUser>('User', userSchema)
+export const UserModel = model<FullUser>('User', userSchema)

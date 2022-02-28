@@ -455,6 +455,77 @@
           }
         }
       }
+    },
+    "/user/{userName}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Получить публичную информацию о пользователе",
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "Имя пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о пользователе",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/publicUser"
+                },
+                "example": {
+                  "name": "Cool_Bob"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/messageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "user/{userName}/cards/created": {
+      "get": {
+        "tags": ["users", "cards"],
+        "summary": "Получить список карточек, созданных пользователем",
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "path",
+            "description": "Имя пользователя",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список карточек",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/cards"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -513,12 +584,24 @@
       "fullUser": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/loginUser"
+            "$ref": "#/components/schemas/registerUser"
           },
           {
-            "$ref": "#/components/schemas/id"
+            "$ref": "#/components/schemas/publicUser"
           }
         ]
+      },
+      "publicUser": {
+        "type": "object",
+        "required": ["name", "cards"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "cards": {
+            "$ref": "#/components/schemas/cards"
+          }
+        }
       },
       "me": {
         "type": "object",

@@ -22,6 +22,7 @@ import {
   UpdatedCard,
   Card,
   CardsResponse,
+  PublicUser,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -227,6 +228,27 @@ app.get('/me', authMiddleware, async (req, res: Response<Me>) => {
 
   return res.json({
     name: userData.name,
+  })
+})
+
+app.get('/user/:userName', async (req: Request<{ userName: string }>, res: Response<PublicUser>) => {
+  const { userName } = req.params
+
+  const user = await UserModel.findOne({ name: userName }).populate({
+    path: 'cards',
+    populate: {
+      path: 'author',
+      select: 'name',
+    },
+  })
+
+  if (!user) {
+    return res.status(404).json({ message: `Пользователь ${userName} не найден` })
+  }
+
+  return res.json({
+    name: user.name,
+    cards: user.cards,
   })
 })
 

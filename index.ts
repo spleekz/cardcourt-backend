@@ -82,9 +82,9 @@ app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => 
 
 app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Response) => {
   const { name } = req.body
-  const author = req.user.name
+  const authorId = req.user._id
 
-  const sameCard = await CardModel.findOne({ name, author })
+  const sameCard = await CardModel.findOne({ name, 'author._id': req.user._id })
 
   if (sameCard) {
     return res.json({
@@ -92,8 +92,11 @@ app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Resp
     })
   }
 
-  const card = new CardModel({ ...req.body, author })
+  const card = new CardModel({ ...req.body, author: req.user._id })
+
   await card.save()
+
+  await UserModel.updateOne({ _id: authorId }, { $push: { cards: card._id } })
 
   return res.json({ message: 'Карточка создана!' })
 })
@@ -104,12 +107,14 @@ app.delete(
   cardMiddleware,
   async (req: Request<{}, DeletedCard>, res: Response) => {
     const { user, card } = req
-
-    if (!(user.name === card.author)) {
-      return res.json({ message: 'Вы не можете удалить эту карточку!' })
+    if (!user._id.equals(card.author._id)) {
+      return res.status(403).json({ message: 'Вы не можете удалить эту карточку!' })
     }
 
     await card.delete()
+
+    await UserModel.updateOne({ _id: user._id }, { $pullAll: { cards: [{ _id: card._id }] } })
+
     return res.json({ message: `Карточка '${card.name}' удалена!` })
   }
 )
@@ -125,7 +130,7 @@ app.put(
     const cardAuthor = user.name
     const thisCard = await CardModel.findById(updatedCard._id)
 
-    const isAuthor = cardAuthor === thisCard?.author
+    const isAuthor = cardAuthor === thisCard?.author.name
 
     if (!isAuthor) {
       return res.status(400).json({ message: 'Вы не можете обновить эту карточку!' })
@@ -140,7 +145,7 @@ app.put(
 app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<Card>) => {
   const { cardId } = req.params
 
-  const card = await CardModel.findById(cardId)
+  const card = await CardModel.findById(cardId).populate('author', 'name')
 
   if (!card) {
     return res.status(404).json({ message: 'Нет такой карточки!' })
@@ -200,6 +205,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
       },
     ],
   })
+    .populate({ path: 'author', select: 'name' })
     .skip((+page - 1) * +pageSize)
     .limit(+pageSize * +pagesToLoad)
 

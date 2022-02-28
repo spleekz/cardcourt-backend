@@ -42,6 +42,11 @@ export interface CardUI {
   bodyColor: string;
 }
 
+export interface CardAuthor {
+  name: string;
+  _id: string;
+}
+
 export interface EditedCardFields {
   ui: CardUI;
   words: (CardWord | SendedCardWord)[];
@@ -65,7 +70,7 @@ export interface SendedCard {
   ui: CardUI;
 }
 
-export type Card = { author: string; words: CardWords } & SendedCard & Id;
+export type Card = { author: CardAuthor; words: CardWords } & SendedCard & Id;
 
 export type DeletedCard = Id;
 
@@ -77,4 +82,8 @@ export interface CardsResponse {
   cards: Cards;
   pagesLoaded: number;
   pageCount: number;
+}
+
+export interface User {
+  name: string;
 }

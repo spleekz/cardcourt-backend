@@ -6,10 +6,10 @@ const wordSchema = new Schema({
   ru: { type: String, required: true },
 })
 
-const cardSchema = new Schema(
+export const cardSchema = new Schema(
   {
     name: { type: String, required: true },
-    author: { type: String, required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     words: [wordSchema],
     ui: {
       headColor: { type: String, required: true },

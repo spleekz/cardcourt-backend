@@ -195,7 +195,10 @@
                     {
                       "_id": "0238hghuuu8f9d",
                       "name": "My Frist Card",
-                      "author": "Cool_Bob",
+                      "author": {
+                        "name": "Cool_Bob",
+                        "_id": "324dfffd4z"
+                      },
                       "words": [
                         {
                           "en": "sun",
@@ -411,7 +414,10 @@
                 "example": {
                   "_id": "0238hghuuu8f9d",
                   "name": "My Frist Card",
-                  "author": "Cool_Bob",
+                  "author": {
+                    "name": "Cool_Bob",
+                    "_id": "324dfffd4z"
+                  },
                   "words": [
                     {
                       "en": "sun",
@@ -535,6 +541,18 @@
           }
         }
       },
+      "cardAuthor": {
+        "type": "object",
+        "required": ["name", "_id"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "_id": {
+            "type": "string"
+          }
+        }
+      },
       "editedCardFields": {
         "type": "object",
         "required": ["ui", "words", "name"],
@@ -616,7 +634,7 @@
             "required": ["author", "words"],
             "properties": {
               "author": {
-                "type": "string"
+                "$ref": "#/components/schemas/cardAuthor"
               },
               "words": {
                 "$ref": "#/components/schemas/cardWords"

@@ -33,9 +33,17 @@ export interface LoginUser {
 
 export type FullUser = RegisterUser & PublicUser;
 
-export interface PublicUser {
+export interface PublicUserInfo {
   name: string;
-  cards: Cards;
+}
+
+export interface PublicUserFeatures {
+  publicCards: Cards;
+}
+
+export interface PublicUser {
+  publicUserInfo: PublicUserInfo;
+  publicUserFeatures: PublicUserFeatures;
 }
 
 export interface Me {

@@ -22,7 +22,7 @@ import {
   UpdatedCard,
   Card,
   CardsResponse,
-  PublicUser,
+  PublicUserInfo,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -177,17 +177,17 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
         author: cardsAuthor ? cardsAuthor._id : { $exists: true },
       },
       {
-    $or: [
-      {
-        name: searchRegex,
-      },
-      {
-        'words.en': searchRegex,
-      },
-      {
-        'words.ru': searchRegex,
-      },
-    ],
+        $or: [
+          {
+            name: searchRegex,
+          },
+          {
+            'words.en': searchRegex,
+          },
+          {
+            'words.ru': searchRegex,
+          },
+        ],
       },
     ],
   })
@@ -208,15 +208,15 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
         author: cardsAuthor ? cardsAuthor._id : { $exists: true },
       },
       {
-    $or: [
-      {
-        name: searchRegex,
-      },
-      {
-        'words.en': searchRegex,
-      },
-      {
-        'words.ru': searchRegex,
+        $or: [
+          {
+            name: searchRegex,
+          },
+          {
+            'words.en': searchRegex,
+          },
+          {
+            'words.ru': searchRegex,
           },
         ],
       },
@@ -247,26 +247,28 @@ app.get('/me', authMiddleware, async (req, res: Response<Me>) => {
   })
 })
 
-app.get('/user/:userName', async (req: Request<{ userName: string }>, res: Response<PublicUser>) => {
-  const { userName } = req.params
+app.get(
+  '/userInfo/:userName',
+  async (req: Request<{ userName: string }>, res: Response<PublicUserInfo>) => {
+    const { userName } = req.params
 
-  const user = await UserModel.findOne({ name: userName }).populate({
-    path: 'cards',
-    populate: {
-      path: 'author',
-      select: 'name',
-    },
-  })
+    const user = await UserModel.findOne({ name: userName }).populate({
+      path: 'cards',
+      populate: {
+        path: 'author',
+        select: 'name',
+      },
+    })
 
-  if (!user) {
-    return res.status(404).json({ message: `Пользователь ${userName} не найден` })
+    if (!user) {
+      return res.status(404).json({ message: `Пользователь ${userName} не найден` })
+    }
+
+    return res.json({
+      name: user.name,
+    })
   }
-
-  return res.json({
-    name: user.name,
-    cards: user.cards,
-  })
-})
+)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.get('/swagger.json', (req, res) => {

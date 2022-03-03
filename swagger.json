@@ -465,7 +465,7 @@
         }
       }
     },
-    "/user/{userName}": {
+    "/userInfo/{userName}": {
       "get": {
         "tags": ["users"],
         "summary": "Получить публичную информацию о пользователе",
@@ -486,7 +486,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/publicUser"
+                  "$ref": "#/components/schemas/publicUserInfo"
                 },
                 "example": {
                   "name": "Cool_Bob"
@@ -500,35 +500,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/messageResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "user/{userName}/cards/created": {
-      "get": {
-        "tags": ["users", "cards"],
-        "summary": "Получить список карточек, созданных пользователем",
-        "parameters": [
-          {
-            "name": "userName",
-            "in": "path",
-            "description": "Имя пользователя",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Список карточек",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/cards"
                 }
               }
             }
@@ -600,15 +571,33 @@
           }
         ]
       },
-      "publicUser": {
+      "publicUserInfo": {
         "type": "object",
-        "required": ["name", "cards"],
+        "required": ["name"],
         "properties": {
           "name": {
             "type": "string"
-          },
-          "cards": {
+          }
+        }
+      },
+      "publicUserFeatures": {
+        "type": "object",
+        "required": ["publicCards"],
+        "properties": {
+          "publicCards": {
             "$ref": "#/components/schemas/cards"
+          }
+        }
+      },
+      "publicUser": {
+        "type": "object",
+        "required": ["publicUserInfo", "publicUserFeatures"],
+        "properties": {
+          "publicUserInfo": {
+            "$ref": "#/components/schemas/publicUserInfo"
+          },
+          "publicUserFeatures": {
+            "$ref": "#/components/schemas/publicUserFeatures"
           }
         }
       },

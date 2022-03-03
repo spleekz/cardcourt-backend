@@ -160,16 +160,23 @@ interface GetCardsQuery {
   pagesToLoad?: string
   search?: string
   pageSize?: string
+  by?: string
 }
 
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
-  const { page = 1, pageSize = 5, search = '' } = req.query
-
+  const { page = 1, pageSize = 5, search = '', by } = req.query
   let pagesToLoad = req.query.pagesToLoad || 1
 
   const searchRegex = new RegExp(search, 'i')
 
+  const cardsAuthor = await UserModel.findOne({ name: by })
+
   const allCards = await CardModel.find({
+    $and: [
+      {
+        author: cardsAuthor ? cardsAuthor._id : { $exists: true },
+      },
+      {
     $or: [
       {
         name: searchRegex,
@@ -181,12 +188,14 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
         'words.ru': searchRegex,
       },
     ],
+      },
+    ],
   })
 
   const pageCount = Math.ceil(allCards.length / +pageSize)
 
-  if (+page > pageCount) {
-    return res.status(404).json({ message: `Максимальное кол-во страниц - ${pageCount}` })
+  if (+pageCount === 0) {
+    return res.status(404).json({ message: `Ничего не найдено` })
   }
 
   if (+page + +pagesToLoad > pageCount) {
@@ -194,6 +203,11 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   }
 
   const cards = await CardModel.find({
+    $and: [
+      {
+        author: cardsAuthor ? cardsAuthor._id : { $exists: true },
+      },
+      {
     $or: [
       {
         name: searchRegex,
@@ -203,6 +217,8 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
       },
       {
         'words.ru': searchRegex,
+          },
+        ],
       },
     ],
   })

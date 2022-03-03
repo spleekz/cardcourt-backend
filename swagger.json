@@ -143,7 +143,7 @@
     "/cards": {
       "get": {
         "tags": ["cards"],
-        "summary": "Начиная со страницы page включительно, загрузить pagesToLoad страниц, имеющих размер pageSize и удовлетворяющих поисковому запросу search",
+        "summary": "Начиная со страницы page включительно, загрузить pagesToLoad страниц, имеющих размер pageSize и удовлетворяющих поисковому запросу search и автору by",
         "parameters": [
           {
             "name": "page",
@@ -176,6 +176,15 @@
             "name": "search",
             "in": "query",
             "description": "Поисковый запрос",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "by",
+            "in": "query",
+            "description": "Имя автора карточек",
             "required": false,
             "schema": {
               "type": "string"

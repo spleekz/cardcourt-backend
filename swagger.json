@@ -751,12 +751,12 @@
       },
       "cardsResponse": {
         "type": "object",
-        "required": ["pageCount", "cards", "pagesLoaded"],
+        "required": ["pageCount", "cards", "maxLoadedPage"],
         "properties": {
           "cards": {
             "$ref": "#/components/schemas/cards"
           },
-          "pagesLoaded": {
+          "maxLoadedPage": {
             "type": "integer"
           },
           "pageCount": {

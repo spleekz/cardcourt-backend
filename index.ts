@@ -167,6 +167,7 @@ interface GetCardsQuery {
 
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
   const { page = 1, pageSize = 5, search = '', by } = req.query
+
   let pagesToLoad = req.query.pagesToLoad || 1
 
   const searchRegex = new RegExp(search, 'i')
@@ -200,8 +201,11 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     return res.status(404).json({ message: `Ничего не найдено` })
   }
 
-  if (+page + +pagesToLoad > pageCount) {
-    pagesToLoad = pageCount - +page + 1
+  const isUserAskedMorePages = +page + +pagesToLoad > pageCount
+
+  const maxLoadedPage = isUserAskedMorePages ? +pageCount : +page + +pagesToLoad - 1
+  if (isUserAskedMorePages) {
+    pagesToLoad = +pageCount - +page + 1
   }
 
   const cards = await CardModel.find({
@@ -231,7 +235,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   return res.json({
     cards,
     pageCount,
-    pagesLoaded: +pagesToLoad,
+    maxLoadedPage: +maxLoadedPage,
   })
 })
 

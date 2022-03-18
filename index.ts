@@ -85,7 +85,7 @@ app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Resp
   const { name } = req.body
   const authorId = req.user._id
 
-  const sameCard = await CardModel.findOne({ name, 'author._id': req.user._id })
+  const sameCard = await CardModel.findOne({ name, author: req.user._id })
 
   if (sameCard) {
     return res.json({

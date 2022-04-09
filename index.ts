@@ -168,7 +168,14 @@ interface GetCardsQuery {
 app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
   const { page = 1, pageSize = 5, search = '', by } = req.query
 
-  let pagesToLoad = req.query.pagesToLoad || 1
+  let pagesToLoad = !isNaN(Number(req.query.pagesToLoad)) ? Number(req.query.pagesToLoad) : 1
+  if (pagesToLoad === 0) {
+    return res.json({
+      cards: [],
+      maxLoadedPage: 0,
+      pageCount: 0,
+    })
+  }
 
   const searchRegex = new RegExp(search, 'i')
 
@@ -201,9 +208,9 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     return res.status(404).json({ message: `Ничего не найдено` })
   }
 
-  const isUserAskedMorePages = +page + +pagesToLoad > pageCount
+  const isUserAskedMorePages = +page + pagesToLoad > pageCount
 
-  const maxLoadedPage = isUserAskedMorePages ? +pageCount : +page + +pagesToLoad - 1
+  const maxLoadedPage = isUserAskedMorePages ? +pageCount : +page + pagesToLoad - 1
   if (isUserAskedMorePages) {
     pagesToLoad = +pageCount - +page + 1
   }
@@ -230,7 +237,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   })
     .populate({ path: 'author', select: 'name' })
     .skip((+page - 1) * +pageSize)
-    .limit(+pageSize * +pagesToLoad)
+    .limit(+pageSize * pagesToLoad)
 
   return res.json({
     cards,

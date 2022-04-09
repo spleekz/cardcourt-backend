@@ -237,6 +237,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     .populate({ path: 'author', select: 'name' })
     .skip((+page - 1) * +pageSize)
     .limit(+pageSize * pagesToLoad)
+    .sort({ _id: -1 })
 
   return res.json({
     cards,

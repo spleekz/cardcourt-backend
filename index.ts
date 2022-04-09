@@ -128,7 +128,6 @@ app.put(
     const { user } = req
     const updatedCard = req.body
 
-    const cardAuthor = user.name
     const thisCard = await CardModel.findById(updatedCard._id)
 
     if (!thisCard) {

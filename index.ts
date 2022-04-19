@@ -23,6 +23,7 @@ import {
   Card,
   CardsResponse,
   PublicUserInfo,
+  CardCountResponse,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -245,6 +246,48 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
     maxLoadedPage: +maxLoadedPage,
   })
 })
+
+type GetCardsPageCountQuery = Pick<GetCardsQuery, 'pageSize' | 'search' | 'by'>
+
+app.get(
+  '/cardCount',
+  async (req: Request<{}, {}, GetCardsPageCountQuery>, res: Response<CardCountResponse>) => {
+    const { pageSize = 5, search = '', by } = req.query
+
+    const searchRegex = new RegExp(search, 'i')
+
+    const cardsAuthor = await UserModel.findOne({ name: by })
+
+    const allCards = await CardModel.find({
+      $and: [
+        {
+          author: cardsAuthor ? cardsAuthor._id : { $exists: true },
+        },
+        {
+          $or: [
+            {
+              name: searchRegex,
+            },
+            {
+              'words.en': searchRegex,
+            },
+            {
+              'words.ru': searchRegex,
+            },
+          ],
+        },
+      ],
+    })
+
+    const cardCount = allCards.length
+    const pageCount = Math.ceil(allCards.length / +pageSize)
+
+    return res.json({
+      pageCount: pageCount,
+      cardCount: cardCount,
+    })
+  }
+)
 
 app.get('/me', authMiddleware, async (req, res: Response<Me>) => {
   const { user } = req

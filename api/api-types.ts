@@ -91,6 +91,11 @@ export type UpdatedCard = Id & EditedCardFields;
 
 export type Cards = Card[];
 
+export interface CardCountResponse {
+  pageCount: number;
+  cardCount: number;
+}
+
 export interface CardsResponse {
   cards: Cards;
   maxLoadedPage: number;

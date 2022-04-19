@@ -249,6 +249,53 @@
         }
       }
     },
+    "/cardCount": {
+      "get": {
+        "tags": ["cards"],
+        "summary": "Получить количество страниц карточек, существующих по этому запросу",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Размер одной страницы (по умолчанию - 5)",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Поисковый запрос",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "by",
+            "in": "query",
+            "description": "Имя автора карточек",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Количество страниц",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/cardCountResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/card": {
       "post": {
         "tags": ["cards"],
@@ -747,6 +794,18 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/card"
+        }
+      },
+      "cardCountResponse": {
+        "type": "object",
+        "required": ["pageCount", "cardCount"],
+        "properties": {
+          "pageCount": {
+            "type": "integer"
+          },
+          "cardCount": {
+            "type": "integer"
+          }
         }
       },
       "cardsResponse": {

@@ -227,7 +227,7 @@
                       ],
                       "ui": {
                         "bodyColor": "#fff",
-                        "headColor": "#ff0000"
+                        "wordsColor": "#ff0000"
                       }
                     }
                   ],
@@ -326,7 +326,7 @@
                 ],
                 "ui": {
                   "bodyColor": "#fff",
-                  "headColor": "#ff0000"
+                  "wordsColor": "#ff0000"
                 }
               }
             }
@@ -493,7 +493,7 @@
                   ],
                   "ui": {
                     "bodyColor": "#fff",
-                    "headColor": "#ff0000"
+                    "wordsColor": "#ff0000"
                   }
                 }
               }
@@ -659,12 +659,12 @@
       },
       "cardUI": {
         "type": "object",
-        "required": ["headColor", "bodyColor"],
+        "required": ["bodyColor", "wordsColor"],
         "properties": {
-          "headColor": {
+          "bodyColor": {
             "type": "string"
           },
-          "bodyColor": {
+          "wordsColor": {
             "type": "string"
           }
         }

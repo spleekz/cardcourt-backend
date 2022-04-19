@@ -12,8 +12,8 @@ export const cardSchema = new Schema(
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     words: [wordSchema],
     ui: {
-      headColor: { type: String, required: true },
       bodyColor: { type: String, required: true },
+      wordsColor: { type: String, required: true },
     },
   },
   { versionKey: false }

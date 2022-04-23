@@ -209,7 +209,11 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   const pageCount = Math.ceil(allCards.length / +pageSize)
 
   if (+pageCount === 0) {
-    return res.status(404).json({ message: `Ничего не найдено` })
+    return res.status(200).json({
+      cards: [],
+      maxLoadedPage: 0,
+      pageCount: 0,
+    })
   }
 
   const isUserAskedMorePages = +page + pagesToLoad > pageCount

@@ -182,7 +182,7 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   const cardsAuthor = await UserModel.findOne({ name: by })
 
   if (by && !cardsAuthor) {
-    return res.status(404).json({ message: `Не найдены карточки от автора ${by}` })
+    return res.status(404).json({ message: `Пользователя ${by} не существует!` })
   }
 
   const allCards = await CardModel.find({

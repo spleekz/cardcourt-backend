@@ -427,11 +427,11 @@
         },
         "responses": {
           "200": {
-            "description": "Сообщение о добавлении карточки",
+            "description": "Обновленная карточка",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/messageResponse"
+                  "$ref": "#/components/schemas/updateCardResponse"
                 }
               }
             }
@@ -792,6 +792,15 @@
             "$ref": "#/components/schemas/editedCardFields"
           }
         ]
+      },
+      "updateCardResponse": {
+        "type": "object",
+        "required": ["updatedCard"],
+        "properties": {
+          "updatedCard": {
+            "$ref": "#/components/schemas/card"
+          }
+        }
       },
       "cards": {
         "type": "array",

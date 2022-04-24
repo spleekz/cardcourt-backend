@@ -25,6 +25,7 @@ import {
   PublicUserInfo,
   CardCountResponse,
   CreateCardResponse,
+  UpdateCardResponse,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -130,7 +131,7 @@ app.put(
   '/card',
   authMiddleware,
   cardMiddleware,
-  async (req: Request<{}, UpdatedCard>, res: Response) => {
+  async (req: Request<{}, UpdatedCard>, res: Response<UpdateCardResponse>) => {
     const { user } = req
     const updatedCard = req.body
 
@@ -146,7 +147,11 @@ app.put(
 
     await CardModel.updateOne({ _id: updatedCard._id }, { $set: updatedCard })
 
-    return res.json({ message: 'Карточка успешно обновлена!' })
+    const cardAfterUpdate = await CardModel.findById(updatedCard._id).populate('author', 'name')
+
+    return res.json({
+      updatedCard: cardAfterUpdate,
+    })
   }
 )
 

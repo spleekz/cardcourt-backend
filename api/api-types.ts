@@ -91,6 +91,10 @@ export type DeletedCard = Id;
 
 export type UpdatedCard = Id & EditedCardFields;
 
+export interface UpdateCardResponse {
+  updatedCard: Card;
+}
+
 export type Cards = Card[];
 
 export interface CardCountResponse {

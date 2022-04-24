@@ -684,6 +684,15 @@
           }
         }
       },
+      "cardAuthorField": {
+        "type": "object",
+        "required": ["author"],
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/cardAuthor"
+          }
+        }
+      },
       "editedCardFields": {
         "type": "object",
         "required": ["ui", "words", "name"],
@@ -790,6 +799,9 @@
           },
           {
             "$ref": "#/components/schemas/editedCardFields"
+          },
+          {
+            "$ref": "#/components/schemas/cardAuthorField"
           }
         ]
       },

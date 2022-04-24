@@ -141,7 +141,7 @@ app.put(
       return res.status(404).json({ message: 'Вы пытаетесь обновить несуществующую карточку!' })
     }
 
-    if (!user._id.equals(thisCard.author._id)) {
+    if (!user._id.equals(updatedCard.author._id)) {
       return res.status(400).json({ message: 'Вы не можете обновить эту карточку!' })
     }
 

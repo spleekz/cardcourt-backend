@@ -24,6 +24,7 @@ import {
   CardsResponse,
   PublicUserInfo,
   CardCountResponse,
+  CreateCardResponse,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -82,26 +83,30 @@ app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => 
   })
 })
 
-app.post('/card', authMiddleware, async (req: Request<{}, SendedCard>, res: Response) => {
-  const { name } = req.body
-  const authorId = req.user._id
+app.post(
+  '/card',
+  authMiddleware,
+  async (req: Request<{}, SendedCard>, res: Response<CreateCardResponse>) => {
+    const { name } = req.body
+    const authorId = req.user._id
 
-  const sameCard = await CardModel.findOne({ name, author: req.user._id })
+    const sameCard = await CardModel.findOne({ name, author: req.user._id })
 
-  if (sameCard) {
-    return res.json({
-      message: 'Вы уже создали карточку с таким названием!',
-    })
+    if (sameCard) {
+      return res.json({
+        message: 'Вы уже создали карточку с таким названием!',
+      })
+    }
+
+    const card = new CardModel({ ...req.body, author: req.user._id })
+
+    await card.save()
+
+    await UserModel.updateOne({ _id: authorId }, { $push: { cards: card._id } })
+
+    return res.json({ _id: card._id })
   }
-
-  const card = new CardModel({ ...req.body, author: req.user._id })
-
-  await card.save()
-
-  await UserModel.updateOne({ _id: authorId }, { $push: { cards: card._id } })
-
-  return res.json({ message: 'Карточка создана!' })
-})
+)
 
 app.delete(
   '/card',

@@ -334,14 +334,14 @@
         },
         "responses": {
           "200": {
-            "description": "Сообщение о статусе добавления карточки",
+            "description": "Id новосозданной карточки",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/messageResponse"
+                  "$ref": "#/components/schemas/createCardResponse"
                 },
                 "example": {
-                  "message": "Карточка создана!"
+                  "_id": "0238hghuuu8f9d"
                 }
               }
             }
@@ -656,6 +656,9 @@
             "type": "string"
           }
         }
+      },
+      "createCardResponse": {
+        "$ref": "#/components/schemas/id"
       },
       "cardUI": {
         "type": "object",

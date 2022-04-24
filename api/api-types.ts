@@ -50,6 +50,8 @@ export interface Me {
   name: string;
 }
 
+export type CreateCardResponse = Id;
+
 export interface CardUI {
   bodyColor: string;
   wordsColor: string;

@@ -47,7 +47,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/token"
+                  "$ref": "#/components/schemas/loginUserResponse"
                 }
               }
             }
@@ -91,7 +91,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/token"
+                  "$ref": "#/components/schemas/loginUserResponse"
                 }
               }
             }
@@ -596,6 +596,9 @@
           }
         }
       },
+      "registerUserResponse": {
+        "$ref": "#/components/schemas/token"
+      },
       "loginUser": {
         "type": "object",
         "required": ["name", "password"],
@@ -607,6 +610,9 @@
             "type": "string"
           }
         }
+      },
+      "loginUserResponse": {
+        "$ref": "#/components/schemas/token"
       },
       "fullUser": {
         "allOf": [

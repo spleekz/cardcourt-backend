@@ -26,10 +26,14 @@ export interface RegisterUser {
   password: string;
 }
 
+export type RegisterUserResponse = Token;
+
 export interface LoginUser {
   name: string;
   password: string;
 }
+
+export type LoginUserResponse = Token;
 
 export type FullUser = RegisterUser & PublicUser;
 

@@ -50,7 +50,7 @@ export interface PublicUser {
   publicUserFeatures: PublicUserFeatures;
 }
 
-export interface Me {
+export interface MeResponse {
   name: string;
 }
 

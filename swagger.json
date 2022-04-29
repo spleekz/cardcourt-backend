@@ -119,7 +119,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/me"
+                  "$ref": "#/components/schemas/meResponse"
                 },
                 "example": {
                   "name": "Cool_Bob"
@@ -649,7 +649,7 @@
           }
         }
       },
-      "me": {
+      "meResponse": {
         "type": "object",
         "required": ["name"],
         "properties": {

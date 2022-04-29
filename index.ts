@@ -18,7 +18,7 @@ import {
   Token,
   SendedCard,
   DeletedCard,
-  Me,
+  MeResponse,
   UpdatedCard,
   Card,
   CardsResponse,
@@ -307,7 +307,7 @@ app.get(
   }
 )
 
-app.get('/me', authMiddleware, async (req, res: Response<Me>) => {
+app.get('/me', authMiddleware, async (req, res: Response<MeResponse>) => {
   const { user } = req
 
   const userData = await UserModel.findOne({ name: user.name })

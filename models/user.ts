@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose'
-import { FullUser, LoginUser } from '../api/api-types'
+import { FullUser } from '../api/api-types'
 
 const userSchema = new Schema(
   {

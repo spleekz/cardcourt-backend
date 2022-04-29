@@ -32,7 +32,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/registerUser"
+                "$ref": "#/components/schemas/registerUserData"
               },
               "example": {
                 "name": "Cool_Bob",
@@ -76,7 +76,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/loginUser"
+                "$ref": "#/components/schemas/loginUserData"
               },
               "example": {
                 "name": "Cool_Bob",
@@ -579,7 +579,7 @@
           }
         }
       },
-      "registerUser": {
+      "registerUserData": {
         "type": "object",
         "required": ["name", "password"],
         "properties": {
@@ -594,7 +594,7 @@
       "registerUserResponse": {
         "$ref": "#/components/schemas/token"
       },
-      "loginUser": {
+      "loginUserData": {
         "type": "object",
         "required": ["name", "password"],
         "properties": {
@@ -612,7 +612,7 @@
       "fullUser": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/registerUser"
+            "$ref": "#/components/schemas/registerUserData"
           },
           {
             "$ref": "#/components/schemas/publicUser"

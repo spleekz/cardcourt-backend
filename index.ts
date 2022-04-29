@@ -13,8 +13,8 @@ import { UserModel } from './models/user'
 import { CardModel } from './models/card'
 import { Request, Response } from './api/server-utility-types'
 import {
-  LoginUser,
-  RegisterUser,
+  LoginUserData,
+  RegisterUserData,
   Token,
   SendedCard,
   DeletedCard,
@@ -41,7 +41,7 @@ app.listen(port, () => {
   console.log(`server started on port ${port}`)
 })
 
-app.post('/register', async (req: Request<{}, RegisterUser>, res: Response<Token>) => {
+app.post('/register', async (req: Request<{}, RegisterUserData>, res: Response<Token>) => {
   const { name, password } = req.body
 
   const candidates = await UserModel.findOne({ name })
@@ -62,7 +62,7 @@ app.post('/register', async (req: Request<{}, RegisterUser>, res: Response<Token
   })
 })
 
-app.post('/login', async (req: Request<{}, LoginUser>, res: Response<Token>) => {
+app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<Token>) => {
   const { name, password } = req.body
 
   const user = await UserModel.findOne({ name })

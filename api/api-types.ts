@@ -21,21 +21,21 @@ export interface Token {
   token: string;
 }
 
-export interface RegisterUser {
+export interface RegisterUserData {
   name: string;
   password: string;
 }
 
 export type RegisterUserResponse = Token;
 
-export interface LoginUser {
+export interface LoginUserData {
   name: string;
   password: string;
 }
 
 export type LoginUserResponse = Token;
 
-export type FullUser = RegisterUser & PublicUser;
+export type FullUser = RegisterUserData & PublicUser;
 
 export interface PublicUserInfo {
   name: string;

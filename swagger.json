@@ -47,7 +47,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/loginUserResponse"
+                  "$ref": "#/components/schemas/registerUserResponse"
                 }
               }
             }

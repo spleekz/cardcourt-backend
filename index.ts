@@ -15,17 +15,19 @@ import { Request, Response } from './api/server-utility-types'
 import {
   LoginUserData,
   RegisterUserData,
-  Token,
-  SendedCard,
-  DeletedCard,
+  DeleteCardData,
   MeResponse,
-  UpdatedCard,
-  Card,
-  CardsResponse,
-  PublicUserInfo,
-  CardCountResponse,
+  GetCardsResponse,
+  GetCardCountResponse,
   CreateCardResponse,
   UpdateCardResponse,
+  RegisterUserResponse,
+  LoginUserResponse,
+  CreateCardData,
+  DeleteCardResponse,
+  UpdateCardData,
+  GetCardResponse,
+  GetUserInfoResponse,
 } from './api/api-types'
 
 const app: express.Application = express()
@@ -41,28 +43,31 @@ app.listen(port, () => {
   console.log(`server started on port ${port}`)
 })
 
-app.post('/register', async (req: Request<{}, RegisterUserData>, res: Response<Token>) => {
-  const { name, password } = req.body
+app.post(
+  '/register',
+  async (req: Request<{}, RegisterUserData>, res: Response<RegisterUserResponse>) => {
+    const { name, password } = req.body
 
-  const candidates = await UserModel.findOne({ name })
+    const candidates = await UserModel.findOne({ name })
 
-  if (candidates) {
-    return res.json({ message: 'Уже есть пользователь с таким именем!' })
+    if (candidates) {
+      return res.json({ message: 'Уже есть пользователь с таким именем!' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 4)
+
+    const user = new UserModel({ name, password: hashedPassword })
+    await user.save()
+
+    const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
+
+    return res.json({
+      token,
+    })
   }
+)
 
-  const hashedPassword = await bcrypt.hash(password, 4)
-
-  const user = new UserModel({ name, password: hashedPassword })
-  await user.save()
-
-  const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
-
-  return res.json({
-    token,
-  })
-})
-
-app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<Token>) => {
+app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<LoginUserResponse>) => {
   const { name, password } = req.body
 
   const user = await UserModel.findOne({ name })
@@ -87,7 +92,7 @@ app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<Token>)
 app.post(
   '/card',
   authMiddleware,
-  async (req: Request<{}, SendedCard>, res: Response<CreateCardResponse>) => {
+  async (req: Request<{}, CreateCardData>, res: Response<CreateCardResponse>) => {
     const { name } = req.body
     const authorId = req.user._id
 
@@ -113,7 +118,7 @@ app.delete(
   '/card',
   authMiddleware,
   cardMiddleware,
-  async (req: Request<{}, DeletedCard>, res: Response) => {
+  async (req: Request<{}, DeleteCardData>, res: Response<DeleteCardResponse>) => {
     const { user, card } = req
     if (!user._id.equals(card.author._id)) {
       return res.status(403).json({ message: 'Вы не можете удалить эту карточку!' })
@@ -131,7 +136,7 @@ app.put(
   '/card',
   authMiddleware,
   cardMiddleware,
-  async (req: Request<{}, UpdatedCard>, res: Response<UpdateCardResponse>) => {
+  async (req: Request<{}, UpdateCardData>, res: Response<UpdateCardResponse>) => {
     const { user } = req
     const updatedCard = req.body
 
@@ -155,8 +160,9 @@ app.put(
   }
 )
 
-app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<Card>) => {
+app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<GetCardResponse>) => {
   const { cardId } = req.params
+  console.log(req.body)
 
   const card = await CardModel.findById(cardId).populate('author', 'name')
 
@@ -167,7 +173,7 @@ app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<
   return res.json(card)
 })
 
-interface GetCardsQuery {
+interface GetCardsParams {
   page?: string
   pagesToLoad?: string
   search?: string
@@ -175,7 +181,7 @@ interface GetCardsQuery {
   by?: string
 }
 
-app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<CardsResponse>) => {
+app.get('/cards', async (req: Request<{}, {}, GetCardsParams>, res: Response<GetCardsResponse>) => {
   const { page = 1, pageSize = 5, search = '', by } = req.query
 
   let pagesToLoad = !isNaN(Number(req.query.pagesToLoad)) ? Number(req.query.pagesToLoad) : 1
@@ -265,11 +271,11 @@ app.get('/cards', async (req: Request<{}, {}, GetCardsQuery>, res: Response<Card
   })
 })
 
-type GetCardsPageCountQuery = Pick<GetCardsQuery, 'pageSize' | 'search' | 'by'>
+type GetCardCountParams = Pick<GetCardsParams, 'pageSize' | 'search' | 'by'>
 
 app.get(
   '/cardCount',
-  async (req: Request<{}, {}, GetCardsPageCountQuery>, res: Response<CardCountResponse>) => {
+  async (req: Request<{}, {}, GetCardCountParams>, res: Response<GetCardCountResponse>) => {
     const { pageSize = 5, search = '', by } = req.query
 
     const searchRegex = new RegExp(search, 'i')
@@ -323,7 +329,7 @@ app.get('/me', authMiddleware, async (req, res: Response<MeResponse>) => {
 
 app.get(
   '/userInfo/:userName',
-  async (req: Request<{ userName: string }>, res: Response<PublicUserInfo>) => {
+  async (req: Request<{ userName: string }>, res: Response<GetUserInfoResponse>) => {
     const { userName } = req.params
 
     const user = await UserModel.findOne({ name: userName }).populate({

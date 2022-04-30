@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-export interface MessageResponse {
+export interface Message {
   message: string;
 }
 
@@ -35,8 +35,6 @@ export interface LoginUserData {
 
 export type LoginUserResponse = Token;
 
-export type FullUser = RegisterUserData & PublicUser;
-
 export interface PublicUserInfo {
   name: string;
 }
@@ -50,11 +48,15 @@ export interface PublicUser {
   publicUserFeatures: PublicUserFeatures;
 }
 
-export interface MeResponse {
+export type FullUser = RegisterUserData & PublicUser;
+
+export type GetUserInfoResponse = PublicUserInfo;
+
+export interface Me {
   name: string;
 }
 
-export type CreateCardResponse = Id;
+export type MeResponse = Me;
 
 export interface CardUI {
   bodyColor: string;
@@ -95,9 +97,19 @@ export interface SendedCard {
 
 export type Card = { author: CardAuthor; words: CardWords } & SendedCard & Id;
 
-export type DeletedCard = Id;
+export type GetCardResponse = Card;
+
+export type CreateCardData = SendedCard;
+
+export type CreateCardResponse = Id;
+
+export type DeleteCardData = any;
+
+export type DeleteCardResponse = Message;
 
 export type UpdatedCard = Id & EditedCardFields & CardAuthorField;
+
+export type UpdateCardData = UpdatedCard;
 
 export interface UpdateCardResponse {
   updatedCard: Card;
@@ -105,13 +117,13 @@ export interface UpdateCardResponse {
 
 export type Cards = Card[];
 
-export interface CardCountResponse {
-  pageCount: number;
-  cardCount: number;
-}
-
-export interface CardsResponse {
+export interface GetCardsResponse {
   cards: Cards;
   maxLoadedPage: number;
   pageCount: number;
+}
+
+export interface GetCardCountResponse {
+  pageCount: number;
+  cardCount: number;
 }

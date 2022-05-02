@@ -163,6 +163,12 @@ app.put(
 app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<GetCardResponse>) => {
   const { cardId } = req.params
 
+  const isIdValid = mongoose.Types.ObjectId.isValid(cardId)
+
+  if (!isIdValid) {
+    return res.status(404).json({ message: 'Неверный формат id карточки' })
+  }
+
   const card = await CardModel.findById(cardId).populate('author', 'name')
 
   if (!card) {

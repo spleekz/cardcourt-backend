@@ -1,5 +1,5 @@
 import express from 'express'
-import { MessageResponse } from './api-types'
+import { Message } from './api-types'
 
 export type Request<Parameters = {}, Body = {}, Query = {}> = express.Request<
   Parameters,
@@ -7,4 +7,4 @@ export type Request<Parameters = {}, Body = {}, Query = {}> = express.Request<
   Body,
   Query
 >
-export type Response<T = void> = express.Response<T | MessageResponse>
+export type Response<T = void> = express.Response<T | Message>

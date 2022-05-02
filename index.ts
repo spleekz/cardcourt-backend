@@ -162,7 +162,6 @@ app.put(
 
 app.get('/card/:cardId', async (req: Request<{ cardId: string }>, res: Response<GetCardResponse>) => {
   const { cardId } = req.params
-  console.log(req.body)
 
   const card = await CardModel.findById(cardId).populate('author', 'name')
 

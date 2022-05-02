@@ -13,7 +13,7 @@ export async function cardMiddleware<RequestBody extends { _id: string }>(
   const isIdValid = mongoose.Types.ObjectId.isValid(_id)
 
   if (!isIdValid) {
-    return res.status(400).json({ message: 'Неверный формат id карточки' })
+    return res.status(404).json({ message: 'Неверный формат id карточки' })
   }
 
   const thisCard = await CardModel.findById(_id)

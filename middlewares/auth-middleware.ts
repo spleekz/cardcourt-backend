@@ -11,13 +11,13 @@ export const authMiddleware = async (
   next: express.NextFunction
 ) => {
   if (!req.headers.authorization) {
-    return res.json({ message: 'Ошибка авторизации!' })
+    return res.status(401).json({ message: 'Ошибка авторизации!' })
   }
 
   const token = req.headers.authorization.split(' ')[1]
 
   if (!token) {
-    return res.json({ message: 'Ошибка авторизации!' })
+    return res.status(401).json({ message: 'Ошибка авторизации!' })
   }
 
   const userId = (jwt.verify(token, config.secret) as Id)._id

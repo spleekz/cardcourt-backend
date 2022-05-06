@@ -48,10 +48,14 @@ app.post(
   async (req: Request<{}, RegisterUserData>, res: Response<RegisterUserResponse>) => {
     const { name, password } = req.body
 
+    if (name.length > 14) {
+      return res.status(459).json({ message: 'Имя не может быть длиннее 14 символов' })
+    }
+
     const candidates = await UserModel.findOne({ name })
 
     if (candidates) {
-      return res.json({ message: 'Уже есть пользователь с таким именем!' })
+      return res.status(460).json({ message: 'Уже есть пользователь с таким именем!' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 4)
@@ -73,13 +77,13 @@ app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<LoginUs
   const user = await UserModel.findOne({ name })
 
   if (!user) {
-    return res.json({ message: 'Нет пользователя с таким именем!' })
+    return res.status(461).json({ message: 'Нет пользователя с таким именем!' })
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password)
 
   if (!isPasswordValid) {
-    return res.json({ message: 'Неверный пароль!' })
+    return res.status(462).json({ message: 'Неверный пароль!' })
   }
 
   const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })

@@ -1,3 +1,4 @@
+require('dotenv').config()
 import express from 'express'
 import config from './config.json'
 import mongoose from 'mongoose'
@@ -32,12 +33,12 @@ import {
 
 const app: express.Application = express()
 
-const port = config.port
+const port = process.env.PORT
 
 app.use(cors())
 app.use(express.json())
 
-mongoose.connect(config.uri).then((db) => {})
+mongoose.connect(process.env.MONGODB_URI!).then((db) => {})
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`)
@@ -63,7 +64,7 @@ app.post(
     const user = new UserModel({ name, password: hashedPassword })
     await user.save()
 
-    const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY!, { expiresIn: '10h' })
 
     return res.json({
       token,
@@ -86,7 +87,7 @@ app.post('/login', async (req: Request<{}, LoginUserData>, res: Response<LoginUs
     return res.status(462).json({ message: 'Неверный пароль!' })
   }
 
-  const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: '10h' })
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY!, { expiresIn: '10h' })
 
   return res.json({
     token,

@@ -1,5 +1,0 @@
-{
-  "port": 4400,
-  "uri": "mongodb+srv://spleekz:secretroom@cardcourt.njytf.mongodb.net/cardcourt?retryWrites=true&w=majority",
-  "secret": "cc-secret-cc"
-}

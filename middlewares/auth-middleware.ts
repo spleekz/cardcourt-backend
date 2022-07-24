@@ -1,6 +1,5 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import config from '../config.json'
 import { Response } from '../api/server-utility-types'
 import { UserModel } from '../models/user'
 import { Id } from '../api/api-types'
@@ -20,7 +19,7 @@ export const authMiddleware = async (
     return res.status(401).json({ message: 'Ошибка авторизации!' })
   }
 
-  const userId = (jwt.verify(token, config.secret) as Id)._id
+  const userId = (jwt.verify(token, process.env.JWT_SECRET_KEY!) as Id)._id
 
   const user = await UserModel.findById(userId)
 
